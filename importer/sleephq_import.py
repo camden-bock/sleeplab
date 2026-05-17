@@ -531,6 +531,7 @@ def map_machine_date_to_session(record, user_id: str) -> dict:
         "avg_snore":               avg_snore,
         "avg_flow_lim":            avg_flow_lim,
         "has_spo2":                has_spo2,
+        "spo2_source":             "sleephq" if has_spo2 else None,
         "therapy_mode":            therapy_mode,
         "mask_type":               mask_type,
         "humidity_level":          humidity_level,

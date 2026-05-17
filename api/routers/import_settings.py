@@ -24,6 +24,8 @@ class ImportSettingsResponse(BaseModel):
     sleephq_machine_id: Optional[int] = None
     auto_import_sleephq: bool = False
     lookback_days: int = 30
+    mirobody_url: Optional[str] = None
+    has_mirobody_token: bool = False
 
 
 class ImportSettingsUpdate(BaseModel):
@@ -33,6 +35,8 @@ class ImportSettingsUpdate(BaseModel):
     sleephq_machine_id: Optional[int] = None
     auto_import_sleephq: Optional[bool] = None
     lookback_days: Optional[int] = None
+    mirobody_url: Optional[str] = None
+    mirobody_token: Optional[str] = None
 
 
 @router.get("/settings", response_model=ImportSettingsResponse)
@@ -56,6 +60,8 @@ def get_import_settings(
         sleephq_machine_id=row["sleephq_machine_id"],
         auto_import_sleephq=row["auto_import_sleephq"],
         lookback_days=row["lookback_days"],
+        mirobody_url=row["mirobody_url"],
+        has_mirobody_token=bool(row["mirobody_token"]),
     )
 
 
@@ -76,11 +82,13 @@ def save_import_settings(
                 INSERT INTO user_import_settings
                     (user_id, sleephq_client_id, sleephq_client_secret,
                      sleephq_team_id, sleephq_machine_id,
-                     auto_import_sleephq, lookback_days, updated_at)
+                     auto_import_sleephq, lookback_days,
+                     mirobody_url, mirobody_token, updated_at)
                 VALUES
                     (CAST(:uid AS uuid), :client_id, :client_secret,
                      :team_id, :machine_id,
-                     :auto_import, :lookback, NOW())
+                     :auto_import, :lookback,
+                     :mirobody_url, :mirobody_token, NOW())
             """),
             {
                 "uid": current_user["id"],
@@ -90,10 +98,12 @@ def save_import_settings(
                 "machine_id": body.sleephq_machine_id,
                 "auto_import": body.auto_import_sleephq if body.auto_import_sleephq is not None else False,
                 "lookback": body.lookback_days if body.lookback_days is not None else 30,
+                "mirobody_url": body.mirobody_url,
+                "mirobody_token": body.mirobody_token,
             },
         )
     else:
-        fields = {"uid": current_user["id"], "updated_at": "NOW()"}
+        fields = {"uid": current_user["id"]}
         set_clauses = ["updated_at = NOW()"]
 
         if body.sleephq_client_id is not None:
@@ -120,6 +130,15 @@ def save_import_settings(
         if body.lookback_days is not None:
             set_clauses.append("lookback_days = :lookback")
             fields["lookback"] = body.lookback_days
+
+        if body.mirobody_url is not None:
+            set_clauses.append("mirobody_url = :mirobody_url")
+            fields["mirobody_url"] = body.mirobody_url
+
+        # Only update token if a real new value is provided (not null/"***")
+        if body.mirobody_token is not None and body.mirobody_token != "***":
+            set_clauses.append("mirobody_token = :mirobody_token")
+            fields["mirobody_token"] = body.mirobody_token
 
         db.execute(
             text(f"UPDATE user_import_settings SET {', '.join(set_clauses)} WHERE user_id = CAST(:uid AS uuid)"),

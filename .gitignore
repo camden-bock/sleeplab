@@ -9,6 +9,10 @@
 .env
 .env.*
 !.env.example
+.claude/
+.opencode/
+opencode.json
+opencode.jsonc
 
 # Node / Nx
 node_modules/

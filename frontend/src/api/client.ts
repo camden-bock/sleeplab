@@ -115,6 +115,7 @@ export interface SessionDetail extends SessionSummary {
   mask_type: string | null
   humidity_level: number | null
   temperature_c: number | null
+  spo2_source: string | null
 }
 
 export type EquipmentType = 'mask' | 'tubing' | 'humidifier_chamber' | 'filter'
@@ -201,6 +202,8 @@ export interface ImportSettings {
   sleephq_machine_id: number | null
   auto_import_sleephq: boolean
   lookback_days: number
+  mirobody_url: string | null
+  has_mirobody_token: boolean
 }
 
 export interface SummaryStats {
@@ -306,6 +309,7 @@ export const api = {
   getMetrics: (id: string, downsample = 15) =>
     get<MetricsResponse>(`/sessions/${id}/metrics`, { downsample }),
   getSessionSpo2: (id: string) => get<SpO2Response>(`/sessions/${id}/spo2`),
+  getExternalSpo2: (id: string) => get<SpO2Response | null>(`/sessions/${id}/external-spo2`),
   listEquipment: () => get<Equipment[]>('/equipment/'),
   createEquipment: (payload: EquipmentCreate) => post<Equipment>('/equipment/', payload),
   updateEquipment: (id: string, payload: EquipmentUpdate) => put<Equipment>(`/equipment/${id}`, payload),

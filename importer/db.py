@@ -53,7 +53,7 @@ def upsert_session(conn, data: dict) -> int:
         central_apnea_count, obstructive_apnea_count, hypopnea_count,
         apnea_count, arousal_count, total_ahi_events,
         avg_pressure, p95_pressure, avg_leak, avg_resp_rate, avg_tidal_vol,
-        avg_min_vent, avg_snore, avg_flow_lim, has_spo2,
+        avg_min_vent, avg_snore, avg_flow_lim, has_spo2, spo2_source,
         therapy_mode, mask_type, humidity_level, temperature_c,
         user_id, updated_at
     ) VALUES (
@@ -62,7 +62,7 @@ def upsert_session(conn, data: dict) -> int:
         %(central_apnea_count)s, %(obstructive_apnea_count)s, %(hypopnea_count)s,
         %(apnea_count)s, %(arousal_count)s, %(total_ahi_events)s,
         %(avg_pressure)s, %(p95_pressure)s, %(avg_leak)s, %(avg_resp_rate)s, %(avg_tidal_vol)s,
-        %(avg_min_vent)s, %(avg_snore)s, %(avg_flow_lim)s, %(has_spo2)s,
+        %(avg_min_vent)s, %(avg_snore)s, %(avg_flow_lim)s, %(has_spo2)s, %(spo2_source)s,
         %(therapy_mode)s, %(mask_type)s, %(humidity_level)s, %(temperature_c)s,
         %(user_id)s, NOW()
     )
@@ -89,6 +89,7 @@ def upsert_session(conn, data: dict) -> int:
         avg_snore               = EXCLUDED.avg_snore,
         avg_flow_lim            = EXCLUDED.avg_flow_lim,
         has_spo2                = EXCLUDED.has_spo2,
+        spo2_source             = EXCLUDED.spo2_source,
         therapy_mode            = EXCLUDED.therapy_mode,
         mask_type               = EXCLUDED.mask_type,
         humidity_level          = EXCLUDED.humidity_level,

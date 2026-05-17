@@ -44,6 +44,7 @@ class SessionDetail(SessionSummary):
     mask_type: Optional[str]
     humidity_level: Optional[int]
     temperature_c: Optional[float]
+    spo2_source: Optional[str]
 
 
 class EventRecord(BaseModel):

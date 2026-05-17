@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import Dict, List, Optional
-from datetime import date
+from datetime import date, datetime, timezone
+
+import httpx
 
 from ..auth import get_current_user
 from ..database import get_db
@@ -120,7 +122,8 @@ def get_session(
                 (array_agg(s.therapy_mode    ORDER BY s.duration_seconds DESC))[1] AS therapy_mode,
                 (array_agg(s.mask_type       ORDER BY s.duration_seconds DESC))[1] AS mask_type,
                 (array_agg(s.humidity_level  ORDER BY s.duration_seconds DESC))[1] AS humidity_level,
-                (array_agg(s.temperature_c   ORDER BY s.duration_seconds DESC))[1] AS temperature_c
+                (array_agg(s.temperature_c   ORDER BY s.duration_seconds DESC))[1] AS temperature_c,
+                (array_agg(s.spo2_source     ORDER BY s.duration_seconds DESC))[1] AS spo2_source
             FROM sessions s
             JOIN night n ON s.folder_date = n.folder_date AND s.user_id = n.user_id
             WHERE s.duration_seconds >= 600
@@ -291,6 +294,84 @@ def get_session_spo2(
         spo2=[r["spo2"] for r in rows],
         pulse=[r["pulse"] for r in rows],
     )
+
+
+@router.get("/{session_id}/external-spo2", response_model=Optional[SpO2Response])
+def get_external_spo2(
+    session_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Fetch SpO2 and HR from the user's Mirobody instance for this session's time window.
+    Returns null (204) if Mirobody is not configured or returns no data."""
+    settings = db.execute(
+        text("SELECT mirobody_url, mirobody_token FROM user_import_settings WHERE user_id = CAST(:uid AS uuid)"),
+        {"uid": current_user["id"]},
+    ).mappings().first()
+
+    if not settings or not settings["mirobody_url"] or not settings["mirobody_token"]:
+        return None
+
+    internal_id = _require_session(session_id, current_user["id"], db)
+    session_row = db.execute(
+        text("SELECT start_datetime, duration_seconds FROM sessions WHERE id = :id"),
+        {"id": internal_id},
+    ).mappings().first()
+    if not session_row:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    start_dt: datetime = session_row["start_datetime"]
+    if start_dt.tzinfo is None:
+        start_dt = start_dt.replace(tzinfo=timezone.utc)
+    end_dt = start_dt.__class__.fromtimestamp(
+        start_dt.timestamp() + session_row["duration_seconds"], tz=timezone.utc
+    )
+
+    try:
+        resp = httpx.get(
+            settings["mirobody_url"],
+            headers={"Authorization": f"Bearer {settings['mirobody_token']}"},
+            params={
+                "start_time": start_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "end_time": end_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "indicators": "heart_rate,blood_oxygen",
+                "granularity": "minute",
+            },
+            timeout=10.0,
+        )
+        resp.raise_for_status()
+    except httpx.HTTPError:
+        return None
+
+    payload = resp.json()
+    if payload.get("status") != "success":
+        return None
+
+    data = payload.get("data", {})
+    hr_values = data.get("heart_rate", {}).get("values", [])
+    o2_values = data.get("blood_oxygen", {}).get("values", [])
+
+    # Index o2 by timestamp for O(1) lookup when building combined series
+    o2_by_ts = {v["timestamp"]: v["value"] for v in o2_values}
+
+    timestamps, spo2, pulse = [], [], []
+    for point in hr_values:
+        ts = point["timestamp"]
+        timestamps.append(ts)
+        pulse.append(point.get("value"))
+        spo2.append(o2_by_ts.get(ts))
+
+    # If no HR data, build series from o2 only
+    if not timestamps:
+        for point in o2_values:
+            timestamps.append(point["timestamp"])
+            spo2.append(point.get("value"))
+            pulse.append(None)
+
+    if not timestamps:
+        return None
+
+    return SpO2Response(timestamps=timestamps, spo2=spo2, pulse=pulse)
 
 
 def _require_session(session_id: str, user_id: str, db: Session) -> str:

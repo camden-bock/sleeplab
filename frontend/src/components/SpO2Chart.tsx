@@ -1,20 +1,54 @@
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine,
+  ResponsiveContainer, ReferenceLine, Legend,
 } from 'recharts'
 import type { SpO2Response } from '../api/client'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 
 interface Props {
   data: SpO2Response
+  deviceSource?: string | null
+  externalData?: SpO2Response | null
 }
 
-export default function SpO2Chart({ data }: Props) {
-  const chartData = data.timestamps.map((ts, i) => ({
+const SOURCE_LABELS: Record<string, string> = {
+  resmed: 'ResMed',
+  sleephq: 'SleepHQ',
+}
+
+export default function SpO2Chart({ data, deviceSource, externalData }: Props) {
+  const devicePoints = data.timestamps.map((ts, i) => ({
     ts: new Date(ts).getTime(),
     spo2: data.spo2[i],
     pulse: data.pulse[i],
   }))
+
+  // Index external points by minute-truncated timestamp for merge
+  const extSpo2Map = new Map<number, number | null>()
+  const extPulseMap = new Map<number, number | null>()
+  if (externalData) {
+    externalData.timestamps.forEach((ts, i) => {
+      const t = new Date(ts).getTime()
+      extSpo2Map.set(t, externalData.spo2[i])
+      extPulseMap.set(t, externalData.pulse[i])
+    })
+  }
+
+  // Merge: start with device points, attach external columns
+  const allTs = new Set(devicePoints.map(d => d.ts))
+  if (externalData) {
+    externalData.timestamps.forEach(ts => allTs.add(new Date(ts).getTime()))
+  }
+  const chartData = Array.from(allTs).sort().map(ts => {
+    const dev = devicePoints.find(d => d.ts === ts)
+    return {
+      ts,
+      spo2: dev?.spo2 ?? null,
+      pulse: dev?.pulse ?? null,
+      ext_spo2: extSpo2Map.get(ts) ?? null,
+      ext_pulse: extPulseMap.get(ts) ?? null,
+    }
+  })
 
   function fmtTs(ts: number) {
     return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -34,6 +68,9 @@ export default function SpO2Chart({ data }: Props) {
   )
 
   const commonProps = { data: chartData, margin: { top: 4, right: 16, left: 0, bottom: 0 } }
+
+  const deviceLabel = deviceSource ? (SOURCE_LABELS[deviceSource] ?? deviceSource) : 'Device'
+  const hasExternal = externalData != null
 
   return (
     <Card>
@@ -60,12 +97,18 @@ export default function SpO2Chart({ data }: Props) {
                 contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12 }}
                 labelStyle={{ color: '#f8fafc' }}
                 labelFormatter={(v) => fmtTs(Number(v))}
-                formatter={(val: number | undefined) => [
+                formatter={(val: number | null | undefined, name: string) => [
                   val != null ? `${val}%` : 'N/A',
-                  'SpO₂',
+                  name === 'spo2' ? deviceLabel : 'Mirobody',
                 ]}
               />
+              {hasExternal && (
+                <Legend formatter={(value) => value === 'spo2' ? deviceLabel : 'Mirobody'} />
+              )}
               <Line type="monotone" dataKey="spo2" stroke="#818cf8" dot={false} strokeWidth={1.5} connectNulls={false} />
+              {hasExternal && (
+                <Line type="monotone" dataKey="ext_spo2" stroke="#34d399" dot={false} strokeWidth={1.5} connectNulls={false} />
+              )}
             </LineChart>
           </ResponsiveContainer>
           <p className="text-xs text-[var(--muted-foreground)] mt-1">Dashed line at 90% — clinical desaturation threshold.</p>
@@ -88,12 +131,18 @@ export default function SpO2Chart({ data }: Props) {
                 contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12 }}
                 labelStyle={{ color: '#f8fafc' }}
                 labelFormatter={(v) => fmtTs(Number(v))}
-                formatter={(val: number | undefined) => [
+                formatter={(val: number | null | undefined, name: string) => [
                   val != null ? `${val} bpm` : 'N/A',
-                  'Pulse',
+                  name === 'pulse' ? deviceLabel : 'Mirobody',
                 ]}
               />
+              {hasExternal && (
+                <Legend formatter={(value) => value === 'pulse' ? deviceLabel : 'Mirobody'} />
+              )}
               <Line type="monotone" dataKey="pulse" stroke="#f472b6" dot={false} strokeWidth={1.5} connectNulls={false} />
+              {hasExternal && (
+                <Line type="monotone" dataKey="ext_pulse" stroke="#fb923c" dot={false} strokeWidth={1.5} connectNulls={false} />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>

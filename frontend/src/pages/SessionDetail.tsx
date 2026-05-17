@@ -37,6 +37,7 @@ export default function SessionDetail() {
   const [events, setEvents] = useState<EventRecord[]>([])
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null)
   const [spo2, setSpo2] = useState<SpO2Response | null>(null)
+  const [externalSpo2, setExternalSpo2] = useState<SpO2Response | null>(null)
   const [equipment, setEquipment] = useState<InferredEquipment | null>(null)
   const [loading, setLoading] = useState(true)
   const [prevNext, setPrevNext] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null })
@@ -55,6 +56,7 @@ export default function SessionDetail() {
       if (s.has_spo2) {
         api.getSessionSpo2(sessionId).then(setSpo2).catch(() => {})
       }
+      api.getExternalSpo2(sessionId).then(d => { if (d) setExternalSpo2(d) }).catch(() => {})
       api.getInferredEquipment(s.folder_date.toString()).then(setEquipment).catch(() => {})
     }).catch(() => navigate('/dashboard'))
   }, [navigate, sessionId])
@@ -291,7 +293,13 @@ export default function SessionDetail() {
       </Card>
 
       <MetricsChart metrics={metrics} />
-      {spo2 && <SpO2Chart data={spo2} />}
+      {(spo2 || externalSpo2) && (
+        <SpO2Chart
+          data={spo2 ?? { timestamps: [], spo2: [], pulse: [] }}
+          deviceSource={session.spo2_source}
+          externalData={externalSpo2}
+        />
+      )}
     </div>
   )
 }

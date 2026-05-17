@@ -48,6 +48,15 @@ export default function SettingsPage() {
     }
   }
 
+  // Mirobody wearable settings
+  const [mirobodyUrl, setMirobodyUrl] = useState('')
+  const [mirobodyToken, setMirobodyToken] = useState('')
+  const [mirobodyTokenSaved, setMirobodyTokenSaved] = useState(false)
+  const [mirobodyTokenDirty, setMirobodyTokenDirty] = useState(false)
+  const [mirobodyMessage, setMirobodyMessage] = useState<string | null>(null)
+  const [mirobodyError, setMirobodyError] = useState<string | null>(null)
+  const [isMirobodySubmitting, setIsMirobodySubmitting] = useState(false)
+
   // SleepHQ import settings
   const [sleephqClientId, setSleephqClientId] = useState('')
   const [sleephqClientSecret, setSleephqClientSecret] = useState('')
@@ -74,6 +83,8 @@ export default function SettingsPage() {
       setSleephqSecretSaved(settings.has_client_secret)
       setSleephqTeamId(settings.sleephq_team_id != null ? String(settings.sleephq_team_id) : '')
       setSleephqMachineId(settings.sleephq_machine_id != null ? String(settings.sleephq_machine_id) : '')
+      setMirobodyUrl(settings.mirobody_url ?? '')
+      setMirobodyTokenSaved(settings.has_mirobody_token)
     }).catch(() => {
       // No settings saved yet — leave fields empty
     })
@@ -128,6 +139,26 @@ export default function SettingsPage() {
       setPasswordError(err instanceof Error ? err.message : 'Could not change password')
     } finally {
       setIsPasswordSubmitting(false)
+    }
+  }
+
+  async function handleMirobodySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setMirobodyError(null)
+    setMirobodyMessage(null)
+    setIsMirobodySubmitting(true)
+    try {
+      await api.saveImportSettings({
+        mirobody_url: mirobodyUrl || null,
+        mirobody_token: mirobodyTokenDirty ? (mirobodyToken || null) : null,
+      })
+      setMirobodyMessage('Mirobody settings saved.')
+      setMirobodyTokenDirty(false)
+      if (mirobodyTokenDirty && mirobodyToken) setMirobodyTokenSaved(true)
+    } catch (err) {
+      setMirobodyError(err instanceof Error ? err.message : 'Could not save settings')
+    } finally {
+      setIsMirobodySubmitting(false)
     }
   }
 
@@ -330,6 +361,59 @@ export default function SettingsPage() {
 
             <Button type="submit" disabled={isSleephqSubmitting}>
               {isSleephqSubmitting ? 'Saving...' : 'Save SleepHQ settings'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.45),_transparent_38%),var(--surface-strong)]">
+        <CardHeader>
+          <CardTitle className="text-2xl">Mirobody Wearable</CardTitle>
+          <CardDescription>
+            Connect a Mirobody wearable device to overlay SpO₂ and heart rate data on your CPAP session charts.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-5" onSubmit={handleMirobodySubmit}>
+            <div className="space-y-3">
+              <Label htmlFor="mirobodyUrl">API URL</Label>
+              <Input
+                id="mirobodyUrl"
+                value={mirobodyUrl}
+                onChange={(event) => setMirobodyUrl(event.target.value)}
+                autoComplete="off"
+                placeholder="https://your-mirobody-instance.example.com/api/v1/data"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="mirobodyToken">
+                API token
+                {mirobodyTokenSaved && !mirobodyTokenDirty && (
+                  <span className="ml-2 text-xs font-normal text-[var(--olive-deep)]">saved</span>
+                )}
+              </Label>
+              <Input
+                id="mirobodyToken"
+                type="password"
+                value={mirobodyToken}
+                onChange={(event) => {
+                  setMirobodyToken(event.target.value)
+                  setMirobodyTokenDirty(true)
+                }}
+                autoComplete="new-password"
+                placeholder={mirobodyTokenSaved && !mirobodyTokenDirty ? '••••••••••••••••' : 'Bearer token for API access'}
+              />
+              {mirobodyTokenSaved && !mirobodyTokenDirty && (
+                <p className="text-xs text-[var(--muted-foreground)]">Leave blank to keep your existing token.</p>
+              )}
+            </div>
+
+            {mirobodyMessage ? <p className="text-sm font-medium text-[var(--olive-deep)]">{mirobodyMessage}</p> : null}
+            {mirobodyError ? <p className="text-sm text-[var(--danger-text)]">{mirobodyError}</p> : null}
+
+            <Button type="submit" disabled={isMirobodySubmitting}>
+              {isMirobodySubmitting ? 'Saving...' : 'Save Mirobody settings'}
             </Button>
           </form>
         </CardContent>

@@ -176,6 +176,7 @@ def import_folder(folder: Path, folder_date: date, conn, user_id: str):
                 'duration_seconds':   duration_s,
                 'device_serial':      pld_header.device_serial or None,
                 'has_spo2':           spo2_data is not None,
+                'spo2_source':        'resmed' if spo2_data is not None else None,
                 'therapy_mode':       None,
                 'mask_type':          None,
                 'humidity_level':     None,
