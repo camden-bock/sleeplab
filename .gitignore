@@ -9,7 +9,6 @@
 .env
 .env.*
 !.env.example
-.claude/
 .opencode/
 opencode.json
 opencode.jsonc
@@ -42,3 +41,5 @@ uv.lock
 # Local temp / upload artifacts
 tmp/
 *.tmp
+.claude/.sessionnotes/
+.claude/settings.local.json
