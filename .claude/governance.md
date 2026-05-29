@@ -64,3 +64,4 @@ SleepLab is a local-first, privacy-focused health data platform built with a mod
 To prevent task drift and ensure smooth coordination across multiple parallel agents:
 - **LEDGER OF WORK:** Every agent completing a task must append a concise summary of milestones, architectural decisions, and next steps to the end of [`.ai/memory.md`](file:///home/camden/ZedProjects/sleeplab/.ai/memory.md).
 - **BLUEPRINTS:** Consult the rules, personas, and workflows located inside `.ai/` before initiating major features.
+- **LLMS.TXT PROTOCOL:** Maintain and respect the [`llms.txt`](file:///home/camden/ZedProjects/sleeplab/llms.txt) manifest at the root directory. Any agent adding, removing, or significantly restructuring documentation guides must update the universal manifest index links to keep it in sync.
