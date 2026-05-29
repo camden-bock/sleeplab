@@ -15,8 +15,12 @@ plugins:
             - sys.path.append(".")
 nav:
   - Home: index.md
-  - User Guides:
+  - User Guide: user-guide.md
+  - Contributing: contributing.md
+  - Testing: testing.md
+  - Integrations:
       - CPAP Autosync: cpap-autosync-integration.md
+      - SleepHQ Sync: sleephq-integration.md
   - API Reference:
       - Backend (Python): api/backend.md
       - Frontend (React): api/frontend.md

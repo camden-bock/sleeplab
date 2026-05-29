@@ -1,8 +1,16 @@
 # CPAP Autosync Integration Guide
 
-This guide explains how to wire [CPAP_data_uploader](https://github.com/amanuense/CPAP_data_uploader) (an ESP32-based CPAP data collector) to SleepLab so that every SD-card sync automatically triggers an import — no manual uploads needed.
+> [!WARNING]
+> **Direct Uploader Status:** The planned direct uploader support utilizing `CPAP_data_uploader` is currently **not functional**.
+> 
+> **Pending cpap_autosync Utility:** We are actively developing the new `cpap_autosync` utility (which supersedes `CPAP_data_uploader`). This utility is designed specifically for containerized Docker Compose stacks and Home Assistant HACS integration. 
+> 
+> The active projects are hosted on GitLab:
+> - **[open-cpap/cpap-monitor](https://gitlab.com/open-cpap/cpap-monitor):** Core CPAP telemetry monitoring daemon.
+> - **[open-cpap/cpap-monitor-docker](https://gitlab.com/open-cpap/cpap-monitor-docker):** The cleanest, ready-to-run Docker-only Compose stack.
+> - **[open-cpap/hacs-cpap-monitor](https://gitlab.com/open-cpap/hacs-cpap-monitor):** Home Assistant Community Store integration planning to make SleepLab and `cpap-monitor` fully actionable within Home Assistant dashboards.
 
-The two projects are independent: CPAP_data_uploader works with any HTTP webhook target (Healthchecks.io, Home Assistant, etc.). If SleepLab isn't reachable when the ESP32 fires, it logs the error and continues — your sync is never blocked.
+This guide explains how to wire CPAP sync events to SleepLab so that every SD-card sync automatically triggers a backend import — no manual uploads needed.
 
 ---
 

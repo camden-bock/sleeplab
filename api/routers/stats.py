@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from ..auth import get_current_user
 from ..database import get_db
-from ..models import SummaryStats, DailyStat, OverviewStats, OverviewDailyStat
+from ..models import DailyStat, OverviewDailyStat, OverviewStats, SummaryStats
 
 router = APIRouter()
 

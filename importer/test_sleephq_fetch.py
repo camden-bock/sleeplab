@@ -64,14 +64,12 @@ DISPLAY_COLS = [
 
 # db.py loads .env; import it first so env vars are available
 import db  # noqa: F401 (side-effect: loads .env)
-
 from sleephq_import import (
     create_sleephq_client,
     fetch_machine_dates,
     map_machine_date_to_session,
     resolve_machine_id,
 )
-
 
 # ── Formatting helpers ───────────────────────────────────────────────────────
 

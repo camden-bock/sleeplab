@@ -6,7 +6,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 MIGRATION_RE = re.compile(r"^(\d{3})_[a-z0-9_]+\.sql$")
 
 

@@ -8,26 +8,24 @@ Run:
     python import_sessions.py --from 20250101     # from date onward
 """
 
-import os
-import sys
 import argparse
+import os
 import statistics
+import sys
+from datetime import date, datetime
 from pathlib import Path
-from datetime import date, datetime, timedelta
-from typing import Optional
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from edf_parser import parse_brp, parse_pld, parse_eve, parse_sa2, read_header
 from db import (
-    get_session_db_id,
     get_conn,
+    get_session_db_id,
     replace_session_events,
     replace_session_metrics,
     replace_session_spo2,
     replace_session_waveform,
     upsert_session,
 )
-
+from edf_parser import parse_brp, parse_eve, parse_pld, parse_sa2, read_header
 
 AHI_EVENT_TYPES = {'Central Apnea', 'Obstructive Apnea', 'Hypopnea', 'Apnea'}
 
@@ -296,7 +294,7 @@ def backfill_waveform_for_block(conn, session_db_id: str, block: dict) -> bool:
     return True
 
 
-def run_local_import(user_id: str, datalog_path: str, from_date: Optional[str] = None) -> dict:
+def run_local_import(user_id: str, datalog_path: str, from_date: str | None = None) -> dict:
     """
     Programmatic entry point for server-triggered local imports.
 

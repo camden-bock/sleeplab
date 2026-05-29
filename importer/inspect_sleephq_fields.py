@@ -35,8 +35,9 @@ if not _id or not _secret:
 os.environ["SLEEPHQ_CLIENT_ID"] = _id
 os.environ["SLEEPHQ_CLIENT_SECRET"] = _secret
 
-from sleephq_import import create_sleephq_client, resolve_team_id, resolve_machine_id, fetch_machine_dates  # noqa: E402
 from sleephq.api.machines import get_v1_teams_team_id_machines  # noqa: E402
+from sleephq_import import create_sleephq_client, fetch_machine_dates, resolve_machine_id, resolve_team_id  # noqa: E402
+
 
 def _dump(label, obj):
     if obj is None:

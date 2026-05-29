@@ -5,7 +5,6 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-
 VALID_LLM_PROVIDERS = {"openai", "ollama", "litellm", "custom"}
 
 
