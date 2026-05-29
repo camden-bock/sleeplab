@@ -31,4 +31,9 @@ We audited, cleaned, and rebuilt the SleepLab documentation following strict pro
 - **Python Tests & Scripts:** Documented all 13 Python test files inside `tests/` (`conftest.py`, `test_auth.py`, `test_config.py`, `test_equipment.py`, `test_health.py`, `test_import.py`, `test_importer_timezone.py`, `test_local_import.py`, `test_oximeter_parser.py`, `test_oximeter_upload.py`, `test_sessions.py`, `test_wearable.py`) and automation script `scripts/check_migrations.py` with comprehensive, Google-style docstrings for all fixtures, classes, and test functions.
 - **Auto-Formatting & Lint Verification:** Cleanly reformatted all modified test and script files using `uv run ruff format .`, verified 100% compliance under `uv run ruff check .`, and executed all test suites successfully. Changes have been committed and pushed to `docs/update`.
 
+### 5. Frontend JSDoc Compliance Integration (May 2026)
+- **TypeScript JSDoc Generation:** Documented all TypeScript interfaces, types, custom hooks, helper classes, utility functions, and React components across the entire frontend directory (`frontend/src/api/client.ts`, `frontend/src/components/*`, `frontend/src/context/*`, `frontend/src/hooks/*`, `frontend/src/lib/*`, `frontend/src/pages/*`, `frontend/src/App.tsx`, and `frontend/src/config.ts`) with comprehensive, standard JSDoc comments to resolve the previously half-implemented documentation.
+- **Auto-Fix & Docs Build Verification:** Ran `npx eslint --fix .` inside the `frontend/` workspace to enforce styling alignment, and verified a successful TypeDoc and MkDocs reference compilation via `npm run docs:build`. Staged, committed, and pushed all updated files cleanly to `docs/update`.
+
+
 
