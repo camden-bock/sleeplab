@@ -7,7 +7,7 @@
     "frontend": "nx serve frontend",
     "dev": "nx run-many --target=serve --projects=api,frontend --parallel",
     "build": "nx build frontend",
-    "ai:compile": "crag compile --target cursor --target gemini --target aider --target agents-md",
+    "ai:compile": "crag compile --target cursor --target gemini --target aider --target agents-md --target opencode --target claude",
     "ai:audit": "crag audit",
     "ai:auto": "crag analyze && npm run ai:compile"
   },
