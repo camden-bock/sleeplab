@@ -1,0 +1,22 @@
+site_name: SleepLab
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append(".")
+nav:
+  - Home: index.md
+  - User Guides:
+      - CPAP Autosync: cpap-autosync-integration.md
+  - API Reference:
+      - Backend (Python): api/backend.md
+      - Frontend (React): api/frontend.md

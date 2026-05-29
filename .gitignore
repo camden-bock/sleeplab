@@ -72,5 +72,7 @@ CONVENTIONS.md
 .pre-commit-config.yaml
 
 # Local temp / upload artifacts
+site/
+docs/api/frontend/
 tmp/
 *.tmp

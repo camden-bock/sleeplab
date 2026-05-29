@@ -1,4 +1,4 @@
-# Automated CPAP Import via CPAP_data_uploader
+# CPAP Autosync Integration Guide
 
 This guide explains how to wire [CPAP_data_uploader](https://github.com/amanuense/CPAP_data_uploader) (an ESP32-based CPAP data collector) to SleepLab so that every SD-card sync automatically triggers an import — no manual uploads needed.
 

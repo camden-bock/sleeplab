@@ -9,7 +9,10 @@
     "build": "nx build frontend",
     "ai:compile": "crag compile --target cursor --target gemini --target aider --target agents-md --target opencode --target claude",
     "ai:audit": "crag audit",
-    "ai:auto": "crag analyze && npm run ai:compile"
+    "ai:auto": "crag analyze && npm run ai:compile",
+    "docs:build": "npm run docs:frontend && uv run mkdocs build",
+    "docs:serve": "npm run docs:frontend && uv run mkdocs serve",
+    "docs:frontend": "cd frontend && npx typedoc"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
