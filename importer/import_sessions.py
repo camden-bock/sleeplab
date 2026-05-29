@@ -353,12 +353,12 @@ def parse_args():
 
 def main():
     args = parse_args()
-    DATALOG = Path(args.datalog)
+    datalog = Path(args.datalog)
     user_id = args.user_id
     conn = get_conn()
 
     if args.folder:
-        folder = DATALOG / args.folder
+        folder = datalog / args.folder
         if not folder.exists():
             print(f"Folder not found: {folder}")
             sys.exit(1)
@@ -368,7 +368,7 @@ def main():
         conn.close()
         return
 
-    folders = sorted([f for f in DATALOG.iterdir() if f.is_dir() and f.name.isdigit() and len(f.name) == 8])
+    folders = sorted([f for f in datalog.iterdir() if f.is_dir() and f.name.isdigit() and len(f.name) == 8])
 
     if args.from_date:
         folders = [f for f in folders if f.name >= args.from_date]

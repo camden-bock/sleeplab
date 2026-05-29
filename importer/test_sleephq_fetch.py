@@ -21,6 +21,15 @@ import os
 import sys
 from datetime import date, timedelta
 
+# db.py loads .env; import it first so env vars are available
+import db  # noqa: F401 (side-effect: loads .env)
+from sleephq_import import (
+    create_sleephq_client,
+    fetch_machine_dates,
+    map_machine_date_to_session,
+    resolve_machine_id,
+)
+
 
 def _load_users_from_env() -> list[dict]:
     """
@@ -59,17 +68,6 @@ DISPLAY_COLS = [
     "avg_resp_rate",
     "device_serial",
 ]
-
-# ── Imports ──────────────────────────────────────────────────────────────────
-
-# db.py loads .env; import it first so env vars are available
-import db  # noqa: F401 (side-effect: loads .env)
-from sleephq_import import (
-    create_sleephq_client,
-    fetch_machine_dates,
-    map_machine_date_to_session,
-    resolve_machine_id,
-)
 
 # ── Formatting helpers ───────────────────────────────────────────────────────
 
@@ -143,7 +141,6 @@ def main() -> None:
         sys.exit(1)
 
     for user in users:
-        label   = user["label"]
         team_id = user["team_id"]
         user_id = user["user_id"]
 
