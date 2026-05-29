@@ -13,9 +13,11 @@ All changes must pass these checks before commit:
 ### Lint
 1. `uv run ruff check .`
 2. `uv run ruff format --check .`
+3. `cd frontend && npm run lint`
 
 ### Test
-1. `uv run pytest`
+1. `uv run pytest -v --tb=short`
+2. `cd frontend && npx vitest run`
 
 ### Build
 1. `npm run build`
