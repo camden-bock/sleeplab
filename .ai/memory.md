@@ -27,3 +27,8 @@ We audited, cleaned, and rebuilt the SleepLab documentation following strict pro
 - **Rules Compilation:** Regenerated downstream rules templates (`AGENTS.md`, `.cursor/rules/governance.mdc`) from the updated governance blueprint using `npx crag compile`.
 - **Quality Verification & Commit:** Ran `uv run ruff format .` and `uv run ruff check .` to auto-format and lint the entire backend, verified that all Python unit tests pass, and executed a clean `npm run docs:build` to confirm MkDocs and TypeDoc documentation builds are healthy. Successfully committed and pushed the changes to remote branch `docs/update`.
 
+### 4. Test Suite and Script Documentation (May 2026)
+- **Python Tests & Scripts:** Documented all 13 Python test files inside `tests/` (`conftest.py`, `test_auth.py`, `test_config.py`, `test_equipment.py`, `test_health.py`, `test_import.py`, `test_importer_timezone.py`, `test_local_import.py`, `test_oximeter_parser.py`, `test_oximeter_upload.py`, `test_sessions.py`, `test_wearable.py`) and automation script `scripts/check_migrations.py` with comprehensive, Google-style docstrings for all fixtures, classes, and test functions.
+- **Auto-Formatting & Lint Verification:** Cleanly reformatted all modified test and script files using `uv run ruff format .`, verified 100% compliance under `uv run ruff check .`, and executed all test suites successfully. Changes have been committed and pushed to `docs/update`.
+
+
