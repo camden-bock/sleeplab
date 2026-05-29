@@ -7,6 +7,9 @@ declare global {
   }
 }
 
+/**
+ * Helper function for normalize api url.
+ */
 function normalizeApiUrl(value: string | undefined) {
   const normalized = value?.trim()
   return normalized ? normalized.replace(/\/+$/, '') : null
@@ -23,6 +26,9 @@ export function getApiBaseUrl() {
   )
 }
 
+/**
+ * Helper function for parse boolean flag.
+ */
 function parseBooleanFlag(value: unknown) {
   if (typeof value === 'boolean') {
     return value

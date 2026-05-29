@@ -461,14 +461,23 @@ export interface SummaryStats {
   event_breakdown: Record<string, number>
 }
 
+/**
+ * Helper function for get stored token.
+ */
 function getStoredToken() {
   return window.localStorage.getItem(TOKEN_STORAGE_KEY)
 }
 
+/**
+ * Helper function for set stored token.
+ */
 function setStoredToken(token: string) {
   window.localStorage.setItem(TOKEN_STORAGE_KEY, token)
 }
 
+/**
+ * Helper function for clear stored token.
+ */
 function clearStoredToken() {
   window.localStorage.removeItem(TOKEN_STORAGE_KEY)
 }
@@ -517,10 +526,16 @@ async function request<T>(path: string, init?: RequestInit, params?: Record<stri
   return response.json() as Promise<T>
 }
 
+/**
+ * Helper function for get.
+ */
 function get<T>(path: string, params?: Record<string, string | number | boolean>) {
   return request<T>(path, undefined, params)
 }
 
+/**
+ * Helper function for post.
+ */
 function post<T>(path: string, body?: unknown) {
   return request<T>(path, {
     method: 'POST',
@@ -528,6 +543,9 @@ function post<T>(path: string, body?: unknown) {
   })
 }
 
+/**
+ * Helper function for put.
+ */
 function put<T>(path: string, body?: unknown) {
   return request<T>(path, {
     method: 'PUT',
@@ -535,6 +553,9 @@ function put<T>(path: string, body?: unknown) {
   })
 }
 
+/**
+ * Helper function for post form.
+ */
 function postForm<T>(path: string, formData: FormData) {
   return request<T>(path, {
     method: 'POST',

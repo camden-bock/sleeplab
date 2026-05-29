@@ -16,6 +16,9 @@ import {
   type UpdateProfileRequest,
 } from '../api/client'
 
+/**
+ * Properties and structure for the auth context value.
+ */
 interface AuthContextValue {
   user: AuthUser | null
   isLoading: boolean
