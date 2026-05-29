@@ -4,14 +4,20 @@ from api.routers import auth
 
 
 class TestRegistrationSettings:
+    """Test suite for registration settings."""
+
     def test_registration_disabled_flag_accepts_true(self, monkeypatch):
+        """Test registration disabled flag accepts true."""
         monkeypatch.setenv("DISABLE_USER_REGISTRATION", "true")
 
         assert auth.is_registration_disabled() is True
 
 
 class TestRegister:
+    """Test suite for register."""
+
     def test_register_disabled(self, client: TestClient, monkeypatch):
+        """Test register disabled."""
         monkeypatch.setenv("DISABLE_USER_REGISTRATION", "true")
 
         resp = client.post(
@@ -26,6 +32,7 @@ class TestRegister:
         assert resp.json()["detail"] == "User registration is disabled"
 
     def test_register_success(self, client: TestClient):
+        """Test register success."""
         resp = client.post(
             "/auth/register",
             json={
@@ -42,6 +49,7 @@ class TestRegister:
         assert "user_id" in data["user"]
 
     def test_register_duplicate_email(self, client: TestClient, test_user):
+        """Test register duplicate email."""
         resp = client.post(
             "/auth/register",
             json={
@@ -54,6 +62,7 @@ class TestRegister:
         assert resp.status_code == 409
 
     def test_register_weak_password(self, client: TestClient):
+        """Test register weak password."""
         resp = client.post(
             "/auth/register",
             json={
@@ -67,7 +76,10 @@ class TestRegister:
 
 
 class TestLogin:
+    """Test suite for login."""
+
     def test_login_success(self, client: TestClient, test_user):
+        """Test login success."""
         resp = client.post(
             "/auth/login",
             json={
@@ -81,6 +93,7 @@ class TestLogin:
         assert data["user"]["email"] == test_user["email"]
 
     def test_login_wrong_password(self, client: TestClient, test_user):
+        """Test login wrong password."""
         resp = client.post(
             "/auth/login",
             json={
@@ -91,6 +104,7 @@ class TestLogin:
         assert resp.status_code == 401
 
     def test_login_nonexistent_user(self, client: TestClient):
+        """Test login nonexistent user."""
         resp = client.post(
             "/auth/login",
             json={
@@ -102,7 +116,10 @@ class TestLogin:
 
 
 class TestMe:
+    """Test suite for me."""
+
     def test_me_authenticated(self, client: TestClient, auth_headers, test_user):
+        """Test me authenticated."""
         resp = client.get("/auth/me", headers=auth_headers)
         assert resp.status_code == 200
         data = resp.json()
@@ -110,5 +127,6 @@ class TestMe:
         assert data["first_name"] == "Test"
 
     def test_me_unauthenticated(self, client: TestClient):
+        """Test me unauthenticated."""
         resp = client.get("/auth/me")
         assert resp.status_code == 401

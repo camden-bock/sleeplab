@@ -4,12 +4,16 @@ from fastapi.testclient import TestClient
 
 
 class TestListEquipment:
+    """Test suite for list equipment."""
+
     def test_empty(self, client: TestClient, auth_headers):
+        """Test empty."""
         resp = client.get("/equipment/", headers=auth_headers)
         assert resp.status_code == 200
         assert resp.json() == []
 
     def test_after_create(self, client: TestClient, auth_headers):
+        """Test after create."""
         client.post(
             "/equipment/",
             headers=auth_headers,
@@ -27,12 +31,16 @@ class TestListEquipment:
         assert any(e["brand"] == "ResMed" for e in data)
 
     def test_unauthenticated(self, client: TestClient):
+        """Test unauthenticated."""
         resp = client.get("/equipment/")
         assert resp.status_code == 401
 
 
 class TestCreateEquipment:
+    """Test suite for create equipment."""
+
     def test_create_cushion(self, client: TestClient, auth_headers):
+        """Test create cushion."""
         resp = client.post(
             "/equipment/",
             headers=auth_headers,
@@ -52,6 +60,7 @@ class TestCreateEquipment:
         assert data["days_in_use"] is not None
 
     def test_create_tubing(self, client: TestClient, auth_headers):
+        """Test create tubing."""
         resp = client.post(
             "/equipment/",
             headers=auth_headers,
@@ -67,6 +76,7 @@ class TestCreateEquipment:
         assert data["replacement_days"] == 90
 
     def test_invalid_type(self, client: TestClient, auth_headers):
+        """Test invalid type."""
         resp = client.post(
             "/equipment/",
             headers=auth_headers,
@@ -78,6 +88,7 @@ class TestCreateEquipment:
         assert resp.status_code == 422
 
     def test_unauthenticated(self, client: TestClient):
+        """Test unauthenticated."""
         resp = client.post(
             "/equipment/",
             json={
@@ -89,7 +100,10 @@ class TestCreateEquipment:
 
 
 class TestUpdateEquipment:
+    """Test suite for update equipment."""
+
     def test_update_start_date(self, client: TestClient, auth_headers):
+        """Test update start date."""
         create = client.post(
             "/equipment/",
             headers=auth_headers,
@@ -110,6 +124,7 @@ class TestUpdateEquipment:
         assert resp.json()["start_date"] == "2025-03-01"
 
     def test_nonexistent(self, client: TestClient, auth_headers):
+        """Test nonexistent."""
         fake_id = str(uuid.uuid4())
         resp = client.put(
             f"/equipment/{fake_id}",
@@ -121,6 +136,7 @@ class TestUpdateEquipment:
         assert resp.status_code == 404
 
     def test_unauthenticated(self, client: TestClient):
+        """Test unauthenticated."""
         resp = client.put(
             "/equipment/some-id",
             json={
@@ -131,7 +147,10 @@ class TestUpdateEquipment:
 
 
 class TestDeleteEquipment:
+    """Test suite for delete equipment."""
+
     def test_delete_existing(self, client: TestClient, auth_headers):
+        """Test delete existing."""
         create = client.post(
             "/equipment/",
             headers=auth_headers,
@@ -145,17 +164,22 @@ class TestDeleteEquipment:
         assert resp.status_code == 204
 
     def test_nonexistent(self, client: TestClient, auth_headers):
+        """Test nonexistent."""
         fake_id = str(uuid.uuid4())
         resp = client.delete(f"/equipment/{fake_id}", headers=auth_headers)
         assert resp.status_code == 404
 
     def test_unauthenticated(self, client: TestClient):
+        """Test unauthenticated."""
         resp = client.delete("/equipment/some-id")
         assert resp.status_code == 401
 
 
 class TestInferredEquipment:
+    """Test suite for inferred equipment."""
+
     def test_empty(self, client: TestClient, auth_headers):
+        """Test empty."""
         resp = client.get("/equipment/inferred", headers=auth_headers)
         assert resp.status_code == 200
         data = resp.json()
@@ -163,6 +187,7 @@ class TestInferredEquipment:
             assert data.get(eq_type) is None
 
     def test_with_equipment(self, client: TestClient, auth_headers):
+        """Test with equipment."""
         post_resp = client.post(
             "/equipment/",
             headers=auth_headers,
@@ -181,5 +206,6 @@ class TestInferredEquipment:
         assert data.get("headgear") is None
 
     def test_unauthenticated(self, client: TestClient):
+        """Test unauthenticated."""
         resp = client.get("/equipment/inferred")
         assert resp.status_code == 401
