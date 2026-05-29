@@ -10,27 +10,51 @@ export class UnauthorizedError extends Error {
   }
 }
 
+/**
+ * Represents the version status payload returned by the SleepLab backend API.
+ */
 export interface VersionResponse {
+  /** The current installed application version string. */
   version: string
+  /** The latest available release version string on GitHub, or null if checking failed. */
   latest_version: string | null
+  /** Flag indicating whether a newer release version is available for upgrade. */
   update_available: boolean
+  /** The URL string pointing to the latest release details on GitHub, or null. */
   release_url: string | null
 }
 
+/**
+ * Profile details of an authenticated SleepLab user.
+ */
 export interface AuthUser {
+  /** The unique UUID string identifying the user. */
   user_id: string
+  /** The verified email address of the user. */
   email: string
+  /** The user's first name. */
   first_name: string
+  /** The user's last name. */
   last_name: string
 }
 
+/**
+ * Successful authentication response containing the bearer token and user profile details.
+ */
 export interface AuthResponse {
+  /** The signed JWT access token. */
   token: string
+  /** The profile info of the authenticated user. */
   user: AuthUser
 }
 
+/**
+ * Request payload structure for user login credentials.
+ */
 export interface LoginRequest {
+  /** The user's email address candidate. */
   email: string
+  /** The plain text password candidate. */
   password: string
 }
 
