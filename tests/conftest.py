@@ -26,6 +26,7 @@ def migrations_applied():
         return
     engine = create_engine(url, pool_pre_ping=True)
     from server import run_migrations
+
     run_migrations()
     engine.dispose()
 
@@ -83,8 +84,10 @@ def auth_headers(test_user):
 @pytest.fixture
 def client(db):
     """Override the DB dependency with our test-scoped session."""
+
     def _override():
         yield db
+
     app.dependency_overrides[get_db] = _override
     with TestClient(app) as c:
         yield c

@@ -232,9 +232,10 @@ def _cached_or_generated(
 
 def _build_general_context(db: Session, user_id: str, days: int) -> dict[str, Any]:
     start_date = date.today() - timedelta(days=days - 1)
-    rows = db.execute(
-        text(
-            """
+    rows = (
+        db.execute(
+            text(
+                """
             SELECT DISTINCT ON (folder_date)
                 id::text AS id, folder_date, duration_seconds, ahi, avg_pressure, p95_pressure,
                 avg_leak, avg_flow_lim, central_apnea_count, obstructive_apnea_count,
@@ -246,9 +247,12 @@ def _build_general_context(db: Session, user_id: str, days: int) -> dict[str, An
               AND duration_seconds >= 600
             ORDER BY folder_date DESC, duration_seconds DESC
             """
-        ),
-        {"uid": user_id, "start_date": start_date},
-    ).mappings().all()
+            ),
+            {"uid": user_id, "start_date": start_date},
+        )
+        .mappings()
+        .all()
+    )
 
     nights = [_night_dict(r) for r in rows]
     ahi_values = [n["ahi"] for n in nights if n["ahi"] is not None]
@@ -281,9 +285,10 @@ def _build_general_context(db: Session, user_id: str, days: int) -> dict[str, An
 
 
 def _build_trend_context(db: Session, user_id: str) -> dict[str, Any]:
-    rows = db.execute(
-        text(
-            """
+    rows = (
+        db.execute(
+            text(
+                """
             SELECT DISTINCT ON (folder_date)
                 id::text AS id, folder_date, duration_seconds, ahi, avg_pressure, p95_pressure,
                 avg_leak, avg_flow_lim, central_apnea_count, obstructive_apnea_count,
@@ -295,9 +300,12 @@ def _build_trend_context(db: Session, user_id: str) -> dict[str, Any]:
             ORDER BY folder_date DESC, duration_seconds DESC
             LIMIT 30
             """
-        ),
-        {"uid": user_id},
-    ).mappings().all()
+            ),
+            {"uid": user_id},
+        )
+        .mappings()
+        .all()
+    )
 
     nights = [_night_dict(r) for r in rows]
     recent_7 = [n for n in nights[:7] if n["ahi"] is not None]
@@ -310,9 +318,7 @@ def _build_trend_context(db: Session, user_id: str) -> dict[str, Any]:
         "recent_7_avg_ahi": recent_avg,
         "prior_7_avg_ahi": prior_avg,
         "recent_vs_prior_delta": (
-            round(recent_avg - prior_avg, 2)
-            if recent_avg is not None and prior_avg is not None
-            else None
+            round(recent_avg - prior_avg, 2) if recent_avg is not None and prior_avg is not None else None
         ),
         "rising_ahi_streak": _has_rising_streak(nights),
         "event_totals": _event_totals(nights),
@@ -322,9 +328,10 @@ def _build_trend_context(db: Session, user_id: str) -> dict[str, Any]:
 
 
 def _build_session_context(db: Session, user_id: str, session_id: str) -> dict[str, Any] | None:
-    row = db.execute(
-        text(
-            """
+    row = (
+        db.execute(
+            text(
+                """
             WITH night AS (
                 SELECT folder_date, user_id
                 FROM sessions
@@ -361,15 +368,19 @@ def _build_session_context(db: Session, user_id: str, session_id: str) -> dict[s
             WHERE s.duration_seconds >= 600
             GROUP BY s.folder_date
             """
-        ),
-        {"id": session_id, "uid": user_id},
-    ).mappings().first()
+            ),
+            {"id": session_id, "uid": user_id},
+        )
+        .mappings()
+        .first()
+    )
     if not row:
         return None
 
-    events = db.execute(
-        text(
-            """
+    events = (
+        db.execute(
+            text(
+                """
             SELECT se.event_type, se.onset_seconds, se.duration_seconds
             FROM session_events se
             JOIN sessions s ON se.session_id = s.id
@@ -377,12 +388,16 @@ def _build_session_context(db: Session, user_id: str, session_id: str) -> dict[s
               AND s.user_id = CAST(:uid AS uuid)
             ORDER BY se.onset_seconds
             """
-        ),
-        {"folder_date": row["folder_date"], "uid": user_id},
-    ).mappings().all()
-    metrics = db.execute(
-        text(
-            """
+            ),
+            {"folder_date": row["folder_date"], "uid": user_id},
+        )
+        .mappings()
+        .all()
+    )
+    metrics = (
+        db.execute(
+            text(
+                """
             SELECT
                 COUNT(*) AS samples,
                 AVG(leak) AS avg_leak,
@@ -395,9 +410,12 @@ def _build_session_context(db: Session, user_id: str, session_id: str) -> dict[s
             FROM session_metrics
             WHERE session_id = CAST(:sid AS uuid)
             """
-        ),
-        {"sid": row["id"]},
-    ).mappings().first()
+            ),
+            {"sid": row["id"]},
+        )
+        .mappings()
+        .first()
+    )
 
     return {
         "session_id": session_id,
@@ -496,7 +514,9 @@ def _enrich_general_payload(payload: dict[str, Any]) -> dict[str, Any]:
     payload["going_well"] = payload.get("high_confidence_observations", [])[:3]
     payload["whats_not"] = (payload.get("possible_patterns", []) + payload.get("missing_or_uncertain", []))[:3]
     payload["recommended_changes"] = payload.get("things_to_review", [])[:3]
-    payload["disclaimer"] = "AI-generated pattern review, not medical advice. Discuss important treatment questions with a clinician."
+    payload["disclaimer"] = (
+        "AI-generated pattern review, not medical advice. Discuss important treatment questions with a clinician."
+    )
     return payload
 
 
@@ -544,9 +564,10 @@ def _read_cache(
     input_fingerprint: str,
     settings_fingerprint: str,
 ) -> dict[str, Any] | None:
-    row = db.execute(
-        text(
-            """
+    row = (
+        db.execute(
+            text(
+                """
             SELECT response_payload
             FROM ai_analysis_cache
             WHERE user_id = CAST(:uid AS uuid)
@@ -555,15 +576,18 @@ def _read_cache(
               AND input_fingerprint = :input_fingerprint
               AND settings_fingerprint = :settings_fingerprint
             """
-        ),
-        {
-            "uid": user_id,
-            "analysis_type": analysis_type,
-            "cache_key": cache_key,
-            "input_fingerprint": input_fingerprint,
-            "settings_fingerprint": settings_fingerprint,
-        },
-    ).mappings().first()
+            ),
+            {
+                "uid": user_id,
+                "analysis_type": analysis_type,
+                "cache_key": cache_key,
+                "input_fingerprint": input_fingerprint,
+                "settings_fingerprint": settings_fingerprint,
+            },
+        )
+        .mappings()
+        .first()
+    )
     return dict(row["response_payload"]) if row else None
 
 

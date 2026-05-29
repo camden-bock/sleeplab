@@ -47,6 +47,7 @@ SleepLab is a local-first, privacy-focused health data platform built with a mod
 ### TypeScript & React (Frontend)
 - Adhere strictly to **TS-ESLint** standard ruleset and **Prettier** formatting configurations.
 - Focus on strong type safety, robust state management, and descriptive error handling. Do not mock catch blocks.
+- **JSDoc Standards:** Document all public functions, hooks, interfaces, and React components using standard JSDoc comments (specifying parameter and return annotations where helpful) to ensure clear autogeneration by TypeDoc.
 
 ### Web Accessibility (WCAG 2.1 AA)
 - **Contrast Ratios:** Standard body text must maintain >= `4.5:1` contrast; large headings must maintain >= `3:1`.

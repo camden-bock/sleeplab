@@ -67,17 +67,25 @@ class TestOximeterUpload:
         assert data["results"][0]["session_id"] == sid
         assert data["results"][0]["sample_count"] == 2
 
-        rows = db.execute(
-            text("SELECT spo2, pulse FROM session_spo2 WHERE session_id = CAST(:sid AS uuid) ORDER BY ts"),
-            {"sid": sid},
-        ).mappings().all()
+        rows = (
+            db.execute(
+                text("SELECT spo2, pulse FROM session_spo2 WHERE session_id = CAST(:sid AS uuid) ORDER BY ts"),
+                {"sid": sid},
+            )
+            .mappings()
+            .all()
+        )
         assert [row["spo2"] for row in rows] == [97, 96]
         assert [row["pulse"] for row in rows] == [61, 62]
 
-        session = db.execute(
-            text("SELECT has_spo2, avg_spo2, min_spo2 FROM sessions WHERE id = CAST(:sid AS uuid)"),
-            {"sid": sid},
-        ).mappings().one()
+        session = (
+            db.execute(
+                text("SELECT has_spo2, avg_spo2, min_spo2 FROM sessions WHERE id = CAST(:sid AS uuid)"),
+                {"sid": sid},
+            )
+            .mappings()
+            .one()
+        )
         assert session["has_spo2"] is True
         assert float(session["avg_spo2"]) == 96.5
         assert int(session["min_spo2"]) == 96
@@ -120,7 +128,12 @@ class TestOximeterUpload:
         )
         assert skipped.status_code == 200
         assert skipped.json()["skipped"] == 1
-        assert db.execute(text("SELECT COUNT(*) FROM session_spo2 WHERE session_id = CAST(:sid AS uuid)"), {"sid": sid}).scalar_one() == 2
+        assert (
+            db.execute(
+                text("SELECT COUNT(*) FROM session_spo2 WHERE session_id = CAST(:sid AS uuid)"), {"sid": sid}
+            ).scalar_one()
+            == 2
+        )
 
         replacement = build_legacy_viatom_fixture(
             signature=0x0005,
@@ -137,8 +150,12 @@ class TestOximeterUpload:
 
         assert overwritten.status_code == 200
         assert overwritten.json()["imported"] == 1
-        rows = db.execute(
-            text("SELECT spo2, pulse FROM session_spo2 WHERE session_id = CAST(:sid AS uuid) ORDER BY ts"),
-            {"sid": sid},
-        ).mappings().all()
+        rows = (
+            db.execute(
+                text("SELECT spo2, pulse FROM session_spo2 WHERE session_id = CAST(:sid AS uuid) ORDER BY ts"),
+                {"sid": sid},
+            )
+            .mappings()
+            .all()
+        )
         assert [(row["spo2"], row["pulse"]) for row in rows] == [(95, 64)]

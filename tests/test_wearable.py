@@ -15,6 +15,7 @@ from api.wearable.registry import get_adapter
 def test_wearable_payload_is_empty_when_default():
     assert WearablePayload().is_empty()
 
+
 def test_wearable_payload_not_empty_with_hr():
     p = WearablePayload(hr=[Sample(timestamp="2025-01-01T02:00:00Z", value=62.0)])
     assert not p.is_empty()
@@ -46,9 +47,7 @@ def _make_ok_response(json_data: dict):
 def _make_error_response(status_code: int):
     r = MagicMock()
     r.status_code = status_code
-    r.raise_for_status.side_effect = httpx.HTTPStatusError(
-        "error", request=MagicMock(), response=MagicMock()
-    )
+    r.raise_for_status.side_effect = httpx.HTTPStatusError("error", request=MagicMock(), response=MagicMock())
     return r
 
 
@@ -177,6 +176,7 @@ def test_wearable_summary_no_provider_returns_empty(client, auth_headers):
 
 def test_wearable_data_connect_error_returns_empty(client, auth_headers, db):
     from sqlalchemy import text
+
     # Insert wearable settings for the test user so provider is configured.
     # We need the user_id — read it from the auth token via /auth/me.
     me = client.get("/auth/me", headers=auth_headers).json()
@@ -210,6 +210,7 @@ def test_wearable_data_connect_error_returns_empty(client, auth_headers, db):
 
 def test_endpoint_timeout_returns_empty(client, auth_headers, db):
     from sqlalchemy import text
+
     me = client.get("/auth/me", headers=auth_headers).json()
     uid = me["user_id"]
     db.execute(
@@ -243,6 +244,7 @@ def test_endpoint_timeout_returns_empty(client, auth_headers, db):
 
 def test_endpoint_5xx_returns_empty(client, auth_headers, db):
     from sqlalchemy import text
+
     me = client.get("/auth/me", headers=auth_headers).json()
     uid = me["user_id"]
     db.execute(
@@ -284,6 +286,7 @@ def test_endpoint_5xx_returns_empty(client, auth_headers, db):
 
 def test_wearable_data_401_from_api_returns_502(client, auth_headers, db):
     from sqlalchemy import text
+
     me = client.get("/auth/me", headers=auth_headers).json()
     uid = me["user_id"]
     db.execute(
@@ -308,9 +311,7 @@ def test_wearable_data_401_from_api_returns_502(client, auth_headers, db):
         auth_err.status_code = 401
         err_response = MagicMock()
         err_response.status_code = 401
-        auth_err.raise_for_status.side_effect = httpx.HTTPStatusError(
-            "401", request=MagicMock(), response=err_response
-        )
+        auth_err.raise_for_status.side_effect = httpx.HTTPStatusError("401", request=MagicMock(), response=err_response)
         ok = MagicMock()
         ok.status_code = 200
         ok.json.return_value = {"samples": []}
@@ -323,6 +324,7 @@ def test_wearable_data_401_from_api_returns_502(client, auth_headers, db):
 
 
 # ── _stages_to_hours unit tests ───────────────────────────────────────────────
+
 
 def test_stages_to_hours_accumulates_correctly():
     from api.routers.wearable import _stages_to_hours
@@ -356,11 +358,14 @@ def test_env_default_provider_used_when_no_db_row():
     mock_db = MagicMock()
     mock_db.execute.return_value.mappings.return_value.first.return_value = None  # no DB row
 
-    with patch.dict(os.environ, {
-        "WEARABLE_DEFAULT_PROVIDER": "open-wearables",
-        "WEARABLE_DEFAULT_BASE_URL": "http://localhost:4000",
-        "WEARABLE_DEFAULT_API_KEY": "test-key",
-    }):
+    with patch.dict(
+        os.environ,
+        {
+            "WEARABLE_DEFAULT_PROVIDER": "open-wearables",
+            "WEARABLE_DEFAULT_BASE_URL": "http://localhost:4000",
+            "WEARABLE_DEFAULT_API_KEY": "test-key",
+        },
+    ):
         adapter = _get_adapter_for_user("some-user-id", mock_db)
 
     assert adapter is not None
