@@ -3,6 +3,9 @@ import { getApiBaseUrl } from '../config'
 const BASE = getApiBaseUrl()
 const TOKEN_STORAGE_KEY = 'cpap_auth_token'
 
+/**
+ * Class representing the unauthorized error.
+ */
 export class UnauthorizedError extends Error {
   constructor(message = 'Authentication required') {
     super(message)
@@ -58,34 +61,55 @@ export interface LoginRequest {
   password: string
 }
 
+/**
+ * Properties and structure for the register request.
+ */
 export interface RegisterRequest extends LoginRequest {}
 
+/**
+ * Properties and structure for the update profile request.
+ */
 export interface UpdateProfileRequest {
   first_name: string
   last_name: string
   email: string
 }
 
+/**
+ * Properties and structure for the change password request.
+ */
 export interface ChangePasswordRequest {
   current_password: string
   new_password: string
 }
 
+/**
+ * Properties and structure for the import response.
+ */
 export interface ImportResponse {
   status: string
   message: string
 }
 
+/**
+ * Properties and structure for the start import response.
+ */
 export interface StartImportResponse {
   upload_id: string
   message: string
 }
 
+/**
+ * Properties and structure for the import status response.
+ */
 export interface ImportStatusResponse {
   running: boolean
   started_at: string | null
 }
 
+/**
+ * Properties and structure for the oximeter import result.
+ */
 export interface OximeterImportResult {
   filename: string
   status: 'imported' | 'skipped' | 'unmatched' | 'failed'
@@ -95,6 +119,9 @@ export interface OximeterImportResult {
   sample_count?: number | null
 }
 
+/**
+ * Properties and structure for the oximeter import response.
+ */
 export interface OximeterImportResponse {
   imported: number
   skipped: number
@@ -103,6 +130,9 @@ export interface OximeterImportResponse {
   results: OximeterImportResult[]
 }
 
+/**
+ * Properties and structure for the a i summary response.
+ */
 export interface AISummaryResponse {
   headline?: string | null
   therapy_quality?: string | null
@@ -120,6 +150,9 @@ export interface AISummaryResponse {
   error?: string | null
 }
 
+/**
+ * Properties and structure for the session a i summary response.
+ */
 export interface SessionAISummaryResponse {
   headline?: string | null
   therapy_quality?: string | null
@@ -134,6 +167,9 @@ export interface SessionAISummaryResponse {
   error?: string | null
 }
 
+/**
+ * Properties and structure for the trend a i summary response.
+ */
 export interface TrendAISummaryResponse {
   headline?: string | null
   therapy_quality?: string | null
@@ -148,6 +184,9 @@ export interface TrendAISummaryResponse {
   error?: string | null
 }
 
+/**
+ * Properties and structure for the session summary.
+ */
 export interface SessionSummary {
   id: string
   session_id: string
@@ -170,6 +209,9 @@ export interface SessionSummary {
   machine_tz: string | null
 }
 
+/**
+ * Properties and structure for the session detail.
+ */
 export interface SessionDetail extends SessionSummary {
   pld_start_datetime: string
   device_serial: string | null
@@ -186,8 +228,14 @@ export interface SessionDetail extends SessionSummary {
   temperature_c: number | null
 }
 
+/**
+ * Type definition for the equipment type.
+ */
 export type EquipmentType = 'cushion' | 'headgear' | 'tubing' | 'humidifier_chamber' | 'filter'
 
+/**
+ * Properties and structure for the equipment.
+ */
 export interface Equipment {
   id: string
   equipment_type: EquipmentType
@@ -202,6 +250,9 @@ export interface Equipment {
   updated_at: string
 }
 
+/**
+ * Properties and structure for the equipment create.
+ */
 export interface EquipmentCreate {
   equipment_type: EquipmentType
   start_date: string
@@ -212,6 +263,9 @@ export interface EquipmentCreate {
   notes?: string | null
 }
 
+/**
+ * Properties and structure for the equipment update.
+ */
 export interface EquipmentUpdate {
   start_date?: string
   replacement_days?: number | null
@@ -221,6 +275,9 @@ export interface EquipmentUpdate {
   notes?: string | null
 }
 
+/**
+ * Properties and structure for the inferred equipment.
+ */
 export interface InferredEquipment {
   cushion: Equipment | null
   headgear: Equipment | null
@@ -229,6 +286,9 @@ export interface InferredEquipment {
   filter: Equipment | null
 }
 
+/**
+ * Properties and structure for the event record.
+ */
 export interface EventRecord {
   id: number
   event_type: string
@@ -237,6 +297,9 @@ export interface EventRecord {
   event_datetime: string
 }
 
+/**
+ * Properties and structure for the metrics response.
+ */
 export interface MetricsResponse {
   timestamps: string[]
   mask_pressure: (number | null)[]
@@ -250,18 +313,27 @@ export interface MetricsResponse {
   flow_lim: (number | null)[]
 }
 
+/**
+ * Properties and structure for the sp o2 response.
+ */
 export interface SpO2Response {
   timestamps: string[]
   spo2: (number | null)[]
   pulse: (number | null)[]
 }
 
+/**
+ * Properties and structure for the waveform response.
+ */
 export interface WaveformResponse {
   timestamps: string[]
   flow: (number | null)[]
   pressure: (number | null)[]
 }
 
+/**
+ * Properties and structure for the event window response.
+ */
 export interface EventWindowResponse {
   event: EventRecord
   neighboring_events: EventRecord[]
@@ -269,6 +341,9 @@ export interface EventWindowResponse {
   waveform: WaveformResponse
 }
 
+/**
+ * Properties and structure for the daily stat.
+ */
 export interface DailyStat {
   folder_date: string
   ahi: number | null
@@ -276,6 +351,9 @@ export interface DailyStat {
   session_id: string
 }
 
+/**
+ * Properties and structure for the overview daily stat.
+ */
 export interface OverviewDailyStat {
   folder_date: string
   session_id: string
@@ -302,15 +380,24 @@ export interface OverviewDailyStat {
   equipment_age_days: number | null
 }
 
+/**
+ * Properties and structure for the overview stats.
+ */
 export interface OverviewStats {
   nights: OverviewDailyStat[]
 }
 
+/**
+ * Properties and structure for the app config.
+ */
 export interface AppConfig {
   display_tz: string
   machine_tz: string
 }
 
+/**
+ * Properties and structure for the import settings.
+ */
 export interface ImportSettings {
   sleephq_client_id: string | null
   sleephq_client_secret: string | null
@@ -339,12 +426,18 @@ export interface ImportSettings {
   llm_configured: boolean
 }
 
+/**
+ * Properties and structure for the wearable data.
+ */
 export interface WearableData {
   hr: { timestamp: string; value: number }[]
   spo2: { timestamp: string; value: number }[]
   stages: { timestamp: string; stage: number }[]
 }
 
+/**
+ * Properties and structure for the wearable daily summary.
+ */
 export interface WearableDailySummary {
   date: string
   avg_hr: number | null
@@ -355,6 +448,9 @@ export interface WearableDailySummary {
   rem_h: number
 }
 
+/**
+ * Properties and structure for the summary stats.
+ */
 export interface SummaryStats {
   total_nights: number
   nights_with_data: number

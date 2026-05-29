@@ -403,6 +403,11 @@ export default function Import() {
   )
 }
 
+/**
+ * React component to render the oximeter import summary.
+ *
+ * @returns The rendered React element.
+ */
 export function OximeterImportSummary({ result }: { result: OximeterImportResponse }) {
   const groups: Array<{ status: OximeterImportResult['status']; label: string; className: string }> = [
     { status: 'imported', label: 'Imported', className: 'text-[var(--olive-deep)]' },
@@ -488,6 +493,9 @@ function collectEdfFilesFromInput(files: File[], rootName: string): SelectedImpo
     .sort((left, right) => left.relativePath.localeCompare(right.relativePath))
 }
 
+/**
+ * Helper function for collect oximeter files from input.
+ */
 export function collectOximeterFilesFromInput(files: File[]): File[] {
   return files
     .filter((file) => {

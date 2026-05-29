@@ -12,6 +12,9 @@ function normalizeApiUrl(value: string | undefined) {
   return normalized ? normalized.replace(/\/+$/, '') : null
 }
 
+/**
+ * Helper function for get api base url.
+ */
 export function getApiBaseUrl() {
   return (
     normalizeApiUrl(window.__APP_CONFIG__?.API_URL) ??
@@ -30,6 +33,9 @@ function parseBooleanFlag(value: unknown) {
   return ['1', 'true', 'yes', 'on'].includes(value.trim().toLowerCase())
 }
 
+/**
+ * Helper function for get is user registration disabled.
+ */
 export function getIsUserRegistrationDisabled() {
   return (
     parseBooleanFlag(window.__APP_CONFIG__?.DISABLE_USER_REGISTRATION) ||

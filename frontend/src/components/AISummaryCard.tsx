@@ -22,6 +22,11 @@ export default function AISummaryCard({ enabled }: { enabled: boolean }) {
   return <AIInsightsCard enabled={enabled} data={data} isLoading={isLoading} onRefresh={refresh} />
 }
 
+/**
+ * React component to render the a i insights card.
+ *
+ * @returns The rendered React element.
+ */
 export function AIInsightsCard({
   enabled,
   data,

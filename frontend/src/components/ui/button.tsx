@@ -23,6 +23,11 @@ const sizeClasses: Record<Size, string> = {
   lg: 'h-11 px-6',
 }
 
+/**
+ * React component to render the button.
+ *
+ * @returns The rendered React element.
+ */
 export function Button({
   className,
   variant = 'default',
