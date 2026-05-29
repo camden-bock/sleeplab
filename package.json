@@ -6,13 +6,17 @@
     "api": "nx serve api",
     "frontend": "nx serve frontend",
     "dev": "nx run-many --target=serve --projects=api,frontend --parallel",
-    "build": "nx build frontend"
+    "build": "nx build frontend",
+    "ai:compile": "crag compile --target cursor --target gemini --target aider --target agents-md",
+    "ai:audit": "crag audit",
+    "ai:auto": "crag analyze && npm run ai:compile"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^12.0.8",
+    "@whitehatd/crag": "^0.5.45",
     "nx": "^22.7.4",
     "semantic-release": "^24.2.9"
   },

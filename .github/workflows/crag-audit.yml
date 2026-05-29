@@ -34,7 +34,6 @@ jobs:
           pip install -r requirements.txt -r api/requirements.txt
 
       - name: Run Crag Governance Audit
-        run: |
-          npx @whitehatd/crag audit --strict
+        run: npm run ai:audit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

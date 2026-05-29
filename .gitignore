@@ -45,6 +45,32 @@ venv/
 # Python version file (uv)
 .python-version
 
+# AI Agent Compatibility (Local only - managed via npm run ai:compile)
+CLAUDE.md
+GEMINI.md
+.clinerules
+.continuerules
+.rules
+.cursorrules
+.cursor/rules/governance.mdc
+.github/copilot-instructions.md
+.windsurf/
+.amazonq/
+.goose/
+.kiro/
+.junie/
+.coderabbit.yaml
+azure-pipelines.yml
+.circleci/
+.gitlab-ci.yml
+lefthook.yml
+CONVENTIONS.md
+.forgejo/
+.github/workflows/gates.yml
+.github/workflows/governance-guard.yml
+.husky/
+.pre-commit-config.yaml
+
 # Local temp / upload artifacts
 tmp/
 *.tmp
