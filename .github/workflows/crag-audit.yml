@@ -1,0 +1,39 @@
+name: AI Governance Drift Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  crag-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Or yarn/pnpm depending on your frontend package-lock
+
+      - name: Install Project Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Install Python Environment (For Backend Rule Inferences)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python Requirements
+        run: |
+          pip install -r requirements.txt -r api/requirements.txt
+
+      - name: Run Crag Governance Audit
+        run: npm run ai:audit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

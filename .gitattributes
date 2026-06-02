@@ -1,0 +1,11 @@
+# Hide generated AI rules from Pull Request diffs and stats
+.claude/* linguist-generated=true
+.cursor/rules/* linguist-generated=true
+GEMINI.md linguist-generated=true
+AGENTS.md linguist-generated=true
+CONVENTIONS.md linguist-generated=true
+
+# Strip AI workflows and memory from releases/ZIP downloads
+.ai/ export-ignore
+.claude/ export-ignore
+.cursor/ export-ignore
