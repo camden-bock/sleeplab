@@ -37,6 +37,10 @@ const mockSession = {
   mask_type: 'Full Face',
   humidity_level: 4,
   temperature_c: 27,
+  tags: [],
+  therapy_score: { total: 85, grade: 'B' as any, callout: '', components: {} as any },
+  score_vs_30d_avg: 0,
+  note: null,
 };
 
 const mockEvents = [
