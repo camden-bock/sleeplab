@@ -1,6 +1,6 @@
 # SleepLab — Third-Party Notices
 
-**Version:** 1.4.17
+**Version:** 2.0.0
 
 ## SleepyHead / OSCAR / open-cpap-parser
 

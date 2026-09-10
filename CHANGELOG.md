@@ -1,3 +1,22 @@
+# [2.0.0](https://github.com/joshuamyers-dev/sleeplab/compare/v1.4.17...v2.0.0) (2026-09-10)
+
+
+### Bug Fixes
+
+* **deps:** bump openai from 3.6.0 to 3.8.0 ([#247](https://github.com/joshuamyers-dev/sleeplab/issues/247)) ([133f64d](https://github.com/joshuamyers-dev/sleeplab/commit/133f64d90e323e91e3a78ec9431c5239ff8648ef))
+
+
+### Features
+
+* **api:** add /api/v1 versioning with public/internal OpenAPI specs ([201017f](https://github.com/joshuamyers-dev/sleeplab/commit/201017f8a6e7c149329b579510fb5004be3ba88d))
+* **api:** add OpenAPI spec export script ([ebb90b7](https://github.com/joshuamyers-dev/sleeplab/commit/ebb90b710280af24f78bdf6ccd81e541bf856333))
+* **docker:** wire feature-gated MCP server into deployments ([0bcedac](https://github.com/joshuamyers-dev/sleeplab/commit/0bcedacb7365406547fab7f05998dbe598a00f8a))
+
+
+### BREAKING CHANGES
+
+* **api:** all API routes moved from /X to /api/v1/X. The frontend API base URL and test request paths are migrated to /api/v1 in this commit.
+
 ## [1.4.17](https://github.com/joshuamyers-dev/sleeplab/compare/v1.4.16...v1.4.17) (2026-09-03)
 
 
